@@ -1,85 +1,136 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CardValue v1</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:#f4f6fa;color:#172033}
-header{background:#101827;color:#fff;padding:18px 5%;display:flex;justify-content:space-between;align-items:center}.logo{font-weight:850;font-size:22px}.version{font-size:12px;background:#263246;padding:7px 10px;border-radius:99px}
-.hero{padding:38px 5%;background:linear-gradient(135deg,#162235,#48648f);color:#fff}.hero h1{margin:0 0 8px;font-size:36px}.hero p{margin:0;color:#dce5f2}
-.search{display:flex;gap:9px;max-width:1050px;margin-top:22px}.search input,.search select{padding:13px;border:0;border-radius:9px;font-size:14px}.search input{flex:1}.search button{padding:0 20px;border:0;border-radius:9px;font-weight:750}
-main{max-width:1180px;margin:26px auto;padding:0 18px}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.box{background:#fff;border:1px solid #e1e6ee;border-radius:15px;padding:20px;box-shadow:0 6px 20px #10182708}
-.head{display:flex;gap:16px}.thumb{width:120px;height:165px;border-radius:10px;background:linear-gradient(145deg,#dce8ff,#fff);display:flex;align-items:center;justify-content:center;font-size:42px}.muted{color:#667085;font-size:13px}h2{margin:4px 0}.price{font-size:34px;font-weight:850;margin-top:15px}.confidence{display:inline-block;margin-top:5px;padding:5px 9px;border-radius:99px;background:#e8f7f0;color:#13734f;font-size:12px;font-weight:700}
-.filters{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0}.chip{border:1px solid #d7deea;background:#fff;padding:7px 10px;border-radius:99px;font-size:12px;cursor:pointer}.chip.on{background:#172033;color:#fff}
-table{width:100%;border-collapse:collapse}th,td{padding:11px 6px;border-bottom:1px solid #edf0f4;text-align:left}th{font-size:10px;color:#667085;text-transform:uppercase}
-.actions{margin-top:16px;display:flex;gap:8px}button{cursor:pointer;background:#111827;color:#fff;border:0;border-radius:8px;padding:10px 13px}.outline{background:#fff;color:#172033;border:1px solid #d7deea}
-.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:17px 0}.stat div{background:#f7f8fb;border-radius:10px;padding:13px}.stat b{display:block;font-size:20px;margin-top:3px}
-.bar{display:grid;grid-template-columns:70px 1fr 55px;gap:8px;align-items:center;margin:11px 0;font-size:12px}.track{height:10px;background:#edf0f4;border-radius:20px}.fill{height:100%;background:#526a9a;border-radius:20px}
-.schema{font-family:ui-monospace,monospace;background:#101827;color:#dbe5f5;border-radius:10px;padding:15px;font-size:12px;line-height:1.7;overflow:auto}
-footer{text-align:center;color:#8992a1;padding:28px;font-size:12px}
-@media(max-width:760px){.grid{grid-template-columns:1fr}.search{flex-wrap:wrap}.search input{min-width:100%}.search button{height:43px}.hero h1{font-size:29px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CardValue v2 — Prix Pokémon</title>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#f5f7fb}
+    *{box-sizing:border-box} body{margin:0}.wrap{max-width:1050px;margin:auto;padding:18px}
+    header{background:#111827;color:white;padding:22px 18px;border-radius:0 0 22px 22px}
+    h1{margin:0 0 5px;font-size:27px}.sub{opacity:.78;font-size:14px}
+    .panel{background:white;border-radius:18px;padding:16px;margin-top:16px;box-shadow:0 5px 22px #0000000b}
+    .search{display:grid;grid-template-columns:1fr auto;gap:10px}.search input{min-width:0}
+    input,select,button{font:inherit;border:1px solid #d8dee9;border-radius:12px;padding:12px;background:white}
+    button{background:#111827;color:white;border:0;font-weight:700;cursor:pointer}.secondary{background:#eef2f7;color:#111827}
+    .filters{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+    .hint{font-size:12px;color:#667085;margin-top:8px}.status{margin-top:10px;font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px}
+    .card{border:1px solid #e6eaf0;border-radius:16px;padding:14px;background:#fff}
+    .cardtop{display:flex;gap:12px}.thumb{width:74px;height:104px;object-fit:cover;border-radius:8px;background:#eef2f7}
+    .name{font-weight:800}.muted{color:#667085;font-size:13px}.price{font-size:25px;font-weight:900;margin-top:8px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:#f0f3f8;border-radius:999px;padding:5px 8px;font-size:11px}
+    .resultActions{margin-top:10px;display:flex;gap:8px}.resultActions button{padding:9px 11px;font-size:13px}
+    .detail{display:none}.detail.show{display:block}.back{margin-bottom:10px}
+    .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+    .metric{background:#f7f8fb;border-radius:12px;padding:11px}.metric b{display:block;font-size:19px}
+    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}th,td{padding:9px 5px;border-bottom:1px solid #edf0f4;text-align:left}
+    .note{font-size:12px;color:#667085;line-height:1.5}.ok{color:#067647}.warn{color:#b54708}
+    @media(max-width:650px){.filters{grid-template-columns:1fr}.search{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
+  </style>
 </head>
 <body>
-<header><div class="logo">🃏 CardValue</div><div class="version">v1 — prototype fonctionnel</div></header>
-<section class="hero">
-<h1>Combien vaut vraiment ta carte ?</h1>
-<p>Recherche par carte, langue, société de grading et grade. Les critères restent séparés pour produire une estimation cohérente.</p>
-<div class="search">
-<input id="query" value="Mega Sableye & Tyranitar GX 045/150" placeholder="Nom, numéro ou extension">
-<select id="language"><option>Toutes les langues</option><option>Français</option><option>Japonais</option><option>Anglais</option><option>Chinois</option><option>Coréen</option><option>Allemand</option><option>Espagnol</option><option>Italien</option></select>
-<select id="grading"><option>Toutes les sociétés</option><option>PSA</option><option>PCA</option><option>BGS</option><option>CGC</option><option>SGC</option><option>ACE</option><option>TAG</option></select>
-<button onclick="searchCard()">Rechercher</button>
-</div>
-</section>
-<main>
-<div class="grid">
-<section class="box">
-<div class="head"><div class="thumb">⚡</div><div><div class="muted">CSM2cC • 045/150 • RR</div><h2>Mega Sableye & Tyranitar GX</h2><div class="muted">🇨🇳 Chinois simplifié</div><div class="price">27,50 €</div><span class="confidence">🟢 Confiance élevée*</span></div></div>
-<div class="filters">
-<span class="chip on">Toutes</span><span class="chip">PSA</span><span class="chip">PCA</span><span class="chip">BGS</span><span class="chip">CGC</span><span class="chip">SGC</span><span class="chip">ACE</span><span class="chip">TAG</span>
-</div>
-<table><thead><tr><th>Société</th><th>Grade</th><th>Médiane</th><th>Ventes</th></tr></thead><tbody>
-<tr><td><b>PSA</b></td><td>10</td><td>43 €</td><td>18</td></tr>
-<tr><td><b>BGS</b></td><td>10</td><td>41 €</td><td>7</td></tr>
-<tr><td><b>CGC</b></td><td>10</td><td>35 €</td><td>11</td></tr>
-<tr><td><b>PCA</b></td><td>9,5</td><td>26 €</td><td>4</td></tr>
-<tr><td><b>SGC</b></td><td>10</td><td>31 €</td><td>3</td></tr>
-<tr><td><b>ACE</b></td><td>10</td><td>29 €</td><td>2</td></tr>
-<tr><td><b>TAG</b></td><td>10</td><td>33 €</td><td>3</td></tr>
-</tbody></table>
-<div class="actions"><button onclick="alert('Collection : prochaine étape')">＋ Collection</button><button class="outline" onclick="alert('Historique : sera alimenté par les ventes réelles')">Historique</button></div>
-</section>
+<header><div class="wrap"><h1>CardValue v2</h1><div class="sub">Recherche de cartes Pokémon + prix réels via PokeTrace</div></div></header>
+<main class="wrap">
+  <section class="panel">
+    <div class="search">
+      <input id="q" placeholder="Ex. Charizard, Pikachu, 045/150…" autocomplete="off">
+      <button onclick="searchCards()">Rechercher</button>
+    </div>
+    <div class="filters">
+      <select id="market"><option value="EU">🇪🇺 Europe / EUR</option><option value="US">🇺🇸 USA / USD</option></select>
+      <select id="grader"><option value="">Toutes les gradations</option><option>PSA</option><option>BGS</option><option>CGC</option><option>SGC</option><option>ACE</option><option>TAG</option><option>PCA</option><option>SFG</option><option>CGS</option><option>PGS</option><option>EGS</option><option>AOG</option><option>GSG</option><option>GCG</option><option>MTG</option></select>
+      <select id="grade"><option value="">Tous les grades</option><option>10</option><option>9.5</option><option>9</option><option>8.5</option><option>8</option></select>
+    </div>
+    <div class="hint">La recherche utilise le marché choisi. Les prix gradés nécessitent un accès PokeTrace Pro ou supérieur.</div>
+    <div id="status" class="status"></div>
+  </section>
 
-<section class="box">
-<h2>Estimation détaillée</h2>
-<div class="stat"><div><span class="muted">Médiane</span><b>27,50 €</b></div><div><span class="muted">Dernière vente</span><b>28,00 €</b></div><div><span class="muted">Plus basse</span><b>21,00 €</b></div><div><span class="muted">Plus haute</span><b>34,00 €</b></div></div>
-<h3>Comparaison</h3>
-<div class="bar"><span>PSA 10</span><div class="track"><div class="fill" style="width:100%"></div></div><b>43 €</b></div>
-<div class="bar"><span>BGS 10</span><div class="track"><div class="fill" style="width:95%"></div></div><b>41 €</b></div>
-<div class="bar"><span>CGC 10</span><div class="track"><div class="fill" style="width:81%"></div></div><b>35 €</b></div>
-<div class="bar"><span>PCA 9,5</span><div class="track"><div class="fill" style="width:60%"></div></div><b>26 €</b></div>
-<hr style="border:0;border-top:1px solid #edf0f4;margin:22px 0">
-<h3>Structure des données</h3>
-<div class="schema">CARD
-  ├─ nom / set / numéro
-  ├─ variante / langue
-  └─ image
+  <section id="results" class="grid"></section>
 
-SALE
-  ├─ card_id
-  ├─ marketplace / url
-  ├─ date / prix / devise
-  ├─ grading_company
-  └─ grade</div>
-<p class="muted">* Les chiffres affichés dans cette maquette sont des données de démonstration. Le moteur réel sera alimenté par des ventes vérifiées.</p>
-</section>
-</div>
+  <section id="detail" class="panel detail">
+    <button class="secondary back" onclick="closeDetail()">← Retour</button>
+    <div id="detailBody"></div>
+  </section>
+
+  <section class="panel note">
+    <b>Important :</b> cette V2 ne fabrique pas de prix. Elle affiche les données retournées par PokeTrace.
+    Les données EU viennent notamment de CardMarket et les données US de TCGPlayer/eBay selon le marché et le plan.
+    Les ventes eBay individuelles sont disponibles via l'endpoint « listings » du plan Scale.
+  </section>
 </main>
-<footer>CardValue v1 — architecture prête pour connexion à des sources de ventes.</footer>
 <script>
-document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on')});
-function searchCard(){alert('Recherche préparée pour : '+document.getElementById('query').value+'\\nLangue : '+document.getElementById('language').value+'\\nGrading : '+document.getElementById('grading').value);}
+const euro = new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+const usd = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
+let currentMarket='EU';
+
+function money(v,currency){if(v==null)return '—'; return (currency==='EUR'?euro:usd).format(v/100);}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+
+async function searchCards(){
+  const q=document.getElementById('q').value.trim();
+  if(!q){document.getElementById('status').textContent='Entre un nom de carte ou un numéro.';return}
+  currentMarket=document.getElementById('market').value;
+  const status=document.getElementById('status');
+  status.textContent='Recherche en cours…';
+  document.getElementById('results').innerHTML='';
+  document.getElementById('detail').classList.remove('show');
+  try{
+    const r=await fetch('/api/search?q='+encodeURIComponent(q)+'&market='+currentMarket);
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.error||'Erreur API');
+    const data=j.data||[];
+    status.textContent=data.length?`${data.length} résultat(s) trouvé(s).`:'Aucun résultat.';
+    document.getElementById('results').innerHTML=data.map(cardHtml).join('');
+  }catch(e){status.innerHTML='<span class="warn">'+esc(e.message)+'</span>';}
+}
+
+function cardHtml(c){
+  const p=c.prices||{};
+  const source = currentMarket==='EU' ? (p.cardmarket||{}) : (p.ebay||p.tcgplayer||{});
+  const grades=Object.entries(source).filter(([k])=>/^(PSA|BGS|CGC|SGC|ACE|TAG|PCA|SFG|CGS|PGS|EGS|AOG|GSG|GCG|MTG)_/.test(k));
+  const raw=source.NEAR_MINT;
+  return `<article class="card">
+    <div class="cardtop">
+      ${c.image?`<img class="thumb" src="${esc(c.image)}" alt="">`: '<div class="thumb"></div>'}
+      <div><div class="name">${esc(c.name)}</div>
+      <div class="muted">${esc(c.cardNumber||'')} · ${esc(c.set?.name||'')}</div>
+      <div class="muted">${esc(c.variant||'')} · ${esc(c.game||'')}</div></div>
+    </div>
+    <div class="price">${raw?money(raw.avg,c.currency):'Prix brut —'}</div>
+    <div class="muted">${raw?'Référence brute / Near Mint':'Aucune donnée brute affichée'}</div>
+    <div class="chips">${grades.slice(0,6).map(([k,v])=>`<span class="chip">${esc(k.replaceAll('_',' '))}: ${money(v.avg,c.currency)}</span>`).join('')}</div>
+    <div class="resultActions"><button onclick="openDetail('${esc(c.id)}')">Voir les prix</button></div>
+  </article>`;
+}
+
+async function openDetail(id){
+  const detail=document.getElementById('detail');
+  const body=document.getElementById('detailBody');
+  detail.classList.add('show'); body.innerHTML='Chargement…'; window.scrollTo({top:0,behavior:'smooth'});
+  try{
+    const r=await fetch('/api/card?id='+encodeURIComponent(id)+'&market='+currentMarket);
+    const j=await r.json(); if(!r.ok) throw new Error(j.error||'Erreur');
+    const c=j.data; const prices=c.prices||{};
+    const source=currentMarket==='EU'?(prices.cardmarket_unsold||prices.cardmarket||{}):(prices.ebay||{});
+    const selectedGrader=document.getElementById('grader').value;
+    const selectedGrade=document.getElementById('grade').value;
+    let rows=Object.entries(source).filter(([k])=>/^(PSA|BGS|CGC|SGC|ACE|TAG|PCA|SFG|CGS|PGS|EGS|AOG|GSG|GCG|MTG)_/.test(k));
+    if(selectedGrader) rows=rows.filter(([k])=>k.startsWith(selectedGrader+'_'));
+    if(selectedGrade) rows=rows.filter(([k])=>k.endsWith('_'+selectedGrade.replace('.','_')));
+    rows.sort((a,b)=>(b[1]?.avg||0)-(a[1]?.avg||0));
+    body.innerHTML=`
+      <h2>${esc(c.name)}</h2>
+      <div class="muted">${esc(c.cardNumber||'')} · ${esc(c.set?.name||'')} · ${esc(c.variant||'')}</div>
+      <div class="metrics">
+        <div class="metric"><span>Top prix affiché</span><b>${money(c.topPrice,c.currency)}</b></div>
+        <div class="metric"><span>Ventes comptées</span><b>${esc(c.totalSaleCount??'—')}</b></div>
+      </div>
+      <h3>Prix gradés</h3>
+      ${rows.length?`<table><thead><tr><th>Gradeur / grade</th><th>Moyenne</th><th>Bas</th><th>Haut</th><th>Ventes</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${esc(k.replaceAll('_',' '))}</td><td>${money(v.avg,c.currency)}</td><td>${money(v.low,c.currency)}</td><td>${money(v.high,c.currency)}</td><td>${esc(v.saleCount??'—')}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Aucun prix gradé correspondant au filtre. Avec le plan gratuit PokeTrace, les données gradées ne sont pas accessibles.</p>'}
+      <p class="note">Dernière mise à jour : ${esc(c.lastUpdated||'—')}. Pour l'historique d'un grade précis, la V2 peut interroger l'endpoint d'historique PokeTrace.</p>`;
+  }catch(e){body.innerHTML='<span class="warn">'+esc(e.message)+'</span>';}
+}
+function closeDetail(){document.getElementById('detail').classList.remove('show');}
 </script>
 </body></html>
