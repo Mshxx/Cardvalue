@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CardValue v1</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:#f4f6fa;color:#172033}
+header{background:#101827;color:#fff;padding:18px 5%;display:flex;justify-content:space-between;align-items:center}.logo{font-weight:850;font-size:22px}.version{font-size:12px;background:#263246;padding:7px 10px;border-radius:99px}
+.hero{padding:38px 5%;background:linear-gradient(135deg,#162235,#48648f);color:#fff}.hero h1{margin:0 0 8px;font-size:36px}.hero p{margin:0;color:#dce5f2}
+.search{display:flex;gap:9px;max-width:1050px;margin-top:22px}.search input,.search select{padding:13px;border:0;border-radius:9px;font-size:14px}.search input{flex:1}.search button{padding:0 20px;border:0;border-radius:9px;font-weight:750}
+main{max-width:1180px;margin:26px auto;padding:0 18px}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.box{background:#fff;border:1px solid #e1e6ee;border-radius:15px;padding:20px;box-shadow:0 6px 20px #10182708}
+.head{display:flex;gap:16px}.thumb{width:120px;height:165px;border-radius:10px;background:linear-gradient(145deg,#dce8ff,#fff);display:flex;align-items:center;justify-content:center;font-size:42px}.muted{color:#667085;font-size:13px}h2{margin:4px 0}.price{font-size:34px;font-weight:850;margin-top:15px}.confidence{display:inline-block;margin-top:5px;padding:5px 9px;border-radius:99px;background:#e8f7f0;color:#13734f;font-size:12px;font-weight:700}
+.filters{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0}.chip{border:1px solid #d7deea;background:#fff;padding:7px 10px;border-radius:99px;font-size:12px;cursor:pointer}.chip.on{background:#172033;color:#fff}
+table{width:100%;border-collapse:collapse}th,td{padding:11px 6px;border-bottom:1px solid #edf0f4;text-align:left}th{font-size:10px;color:#667085;text-transform:uppercase}
+.actions{margin-top:16px;display:flex;gap:8px}button{cursor:pointer;background:#111827;color:#fff;border:0;border-radius:8px;padding:10px 13px}.outline{background:#fff;color:#172033;border:1px solid #d7deea}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:17px 0}.stat div{background:#f7f8fb;border-radius:10px;padding:13px}.stat b{display:block;font-size:20px;margin-top:3px}
+.bar{display:grid;grid-template-columns:70px 1fr 55px;gap:8px;align-items:center;margin:11px 0;font-size:12px}.track{height:10px;background:#edf0f4;border-radius:20px}.fill{height:100%;background:#526a9a;border-radius:20px}
+.schema{font-family:ui-monospace,monospace;background:#101827;color:#dbe5f5;border-radius:10px;padding:15px;font-size:12px;line-height:1.7;overflow:auto}
+footer{text-align:center;color:#8992a1;padding:28px;font-size:12px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.search{flex-wrap:wrap}.search input{min-width:100%}.search button{height:43px}.hero h1{font-size:29px}}
+</style>
+</head>
+<body>
+<header><div class="logo">🃏 CardValue</div><div class="version">v1 — prototype fonctionnel</div></header>
+<section class="hero">
+<h1>Combien vaut vraiment ta carte ?</h1>
+<p>Recherche par carte, langue, société de grading et grade. Les critères restent séparés pour produire une estimation cohérente.</p>
+<div class="search">
+<input id="query" value="Mega Sableye & Tyranitar GX 045/150" placeholder="Nom, numéro ou extension">
+<select id="language"><option>Toutes les langues</option><option>Français</option><option>Japonais</option><option>Anglais</option><option>Chinois</option><option>Coréen</option><option>Allemand</option><option>Espagnol</option><option>Italien</option></select>
+<select id="grading"><option>Toutes les sociétés</option><option>PSA</option><option>PCA</option><option>BGS</option><option>CGC</option><option>SGC</option><option>ACE</option><option>TAG</option></select>
+<button onclick="searchCard()">Rechercher</button>
+</div>
+</section>
+<main>
+<div class="grid">
+<section class="box">
+<div class="head"><div class="thumb">⚡</div><div><div class="muted">CSM2cC • 045/150 • RR</div><h2>Mega Sableye & Tyranitar GX</h2><div class="muted">🇨🇳 Chinois simplifié</div><div class="price">27,50 €</div><span class="confidence">🟢 Confiance élevée*</span></div></div>
+<div class="filters">
+<span class="chip on">Toutes</span><span class="chip">PSA</span><span class="chip">PCA</span><span class="chip">BGS</span><span class="chip">CGC</span><span class="chip">SGC</span><span class="chip">ACE</span><span class="chip">TAG</span>
+</div>
+<table><thead><tr><th>Société</th><th>Grade</th><th>Médiane</th><th>Ventes</th></tr></thead><tbody>
+<tr><td><b>PSA</b></td><td>10</td><td>43 €</td><td>18</td></tr>
+<tr><td><b>BGS</b></td><td>10</td><td>41 €</td><td>7</td></tr>
+<tr><td><b>CGC</b></td><td>10</td><td>35 €</td><td>11</td></tr>
+<tr><td><b>PCA</b></td><td>9,5</td><td>26 €</td><td>4</td></tr>
+<tr><td><b>SGC</b></td><td>10</td><td>31 €</td><td>3</td></tr>
+<tr><td><b>ACE</b></td><td>10</td><td>29 €</td><td>2</td></tr>
+<tr><td><b>TAG</b></td><td>10</td><td>33 €</td><td>3</td></tr>
+</tbody></table>
+<div class="actions"><button onclick="alert('Collection : prochaine étape')">＋ Collection</button><button class="outline" onclick="alert('Historique : sera alimenté par les ventes réelles')">Historique</button></div>
+</section>
+
+<section class="box">
+<h2>Estimation détaillée</h2>
+<div class="stat"><div><span class="muted">Médiane</span><b>27,50 €</b></div><div><span class="muted">Dernière vente</span><b>28,00 €</b></div><div><span class="muted">Plus basse</span><b>21,00 €</b></div><div><span class="muted">Plus haute</span><b>34,00 €</b></div></div>
+<h3>Comparaison</h3>
+<div class="bar"><span>PSA 10</span><div class="track"><div class="fill" style="width:100%"></div></div><b>43 €</b></div>
+<div class="bar"><span>BGS 10</span><div class="track"><div class="fill" style="width:95%"></div></div><b>41 €</b></div>
+<div class="bar"><span>CGC 10</span><div class="track"><div class="fill" style="width:81%"></div></div><b>35 €</b></div>
+<div class="bar"><span>PCA 9,5</span><div class="track"><div class="fill" style="width:60%"></div></div><b>26 €</b></div>
+<hr style="border:0;border-top:1px solid #edf0f4;margin:22px 0">
+<h3>Structure des données</h3>
+<div class="schema">CARD
+  ├─ nom / set / numéro
+  ├─ variante / langue
+  └─ image
+
+SALE
+  ├─ card_id
+  ├─ marketplace / url
+  ├─ date / prix / devise
+  ├─ grading_company
+  └─ grade</div>
+<p class="muted">* Les chiffres affichés dans cette maquette sont des données de démonstration. Le moteur réel sera alimenté par des ventes vérifiées.</p>
+</section>
+</div>
+</main>
+<footer>CardValue v1 — architecture prête pour connexion à des sources de ventes.</footer>
+<script>
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on')});
+function searchCard(){alert('Recherche préparée pour : '+document.getElementById('query').value+'\\nLangue : '+document.getElementById('language').value+'\\nGrading : '+document.getElementById('grading').value);}
+</script>
+</body></html>
