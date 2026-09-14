@@ -1,13 +1,14 @@
 export default async function handler(req, res) {
   try {
-    const { search = "", market = "US" } = req.query;
+    const { search = "", q = "", market = "US" } = req.query;
+const query = search || q;
 
-    if (!search.trim()) {
+    if (!query.trim()) {
       return res.status(400).json({ error: "Missing search query" });
     }
 
     const url = new URL("https://api.poketrace.com/v1/cards");
-    url.searchParams.set("search", search);
+    url.searchParams.set("search", query);
     url.searchParams.set("market", market);
     url.searchParams.set("limit", "20");
 
