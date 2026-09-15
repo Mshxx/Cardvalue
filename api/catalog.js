@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     );
 
     url.searchParams.set("search", query);
-    url.searchParams.set("limit", "10");
+    url.searchParams.set("limit", "5");
 
     const response = await fetch(url, {
       headers: {
