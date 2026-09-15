@@ -1,567 +1,847 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CardValue — Pokémon gradés</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CardValue — Pokémon gradés</title>
 
-<style>
-:root{
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:#111827;background:#f5f7fb
-}
-*{box-sizing:border-box}
-body{margin:0}
-.wrap{max-width:1050px;margin:auto;padding:20px}
-header{
-  background:#111827;color:white;padding:22px 0;margin-bottom:20px
-}
-h1{margin:0;font-size:28px}
-.sub{opacity:.75;margin-top:5px}
-.panel,.card,.detail{
-  background:white;border:1px solid #e3e8f0;
-  border-radius:18px;padding:18px;margin-bottom:16px
-}
-.search{
-  display:grid;grid-template-columns:1fr auto;gap:10px
-}
-input,select,button{
-  font:inherit;border:1px solid #d8dee8;border-radius:12px;
-  padding:13px;background:white
-}
-button{
-  background:#111827;color:white;border:0;font-weight:700
-}
-.filters{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:10px;margin-top:12px
-}
-.hint,.muted{color:#667085;font-size:13px}
-.status{margin-top:12px;font-weight:600}
-.grid{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:14px
-}
-.cardtop{display:flex;gap:14px}
-.thumb{
-  width:90px;height:125px;object-fit:contain;
-  border-radius:10px;background:#f3f4f6
-}
-.name{font-weight:800;font-size:18px}
-.price{font-size:25px;font-weight:900;margin-top:12px}
-.chips{
-  display:flex;flex-wrap:wrap;gap:7px;margin-top:12px
-}
-.chip{
-  background:#f2f4f7;border-radius:999px;
-  padding:7px 10px;font-size:12px
-}
-.actions{margin-top:14px}
-.metrics{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:8px;margin:14px 0
-}
-.metric{
-  background:#f7f8fa;border-radius:12px;padding:12px
-}
-.metric b{display:block;font-size:17px;margin-top:4px}
-table{width:100%;border-collapse:collapse}
-th,td{
-  text-align:left;padding:10px;border-bottom:1px solid #e5e7eb;
-  font-size:13px
-}
-.badge{
-  display:inline-block;padding:5px 8px;border-radius:999px;
-  background:#eef2ff;font-weight:700
-}
-.detail{display:none}
-.detail.show{display:block}
-.close{
-  background:#eef0f3;color:#111827;margin-bottom:12px
-}
-@media(max-width:700px){
-  .wrap{padding:12px}
-  .grid{grid-template-columns:1fr}
-  .filters{grid-template-columns:1fr}
-  .search{grid-template-columns:1fr}
-  .metrics{grid-template-columns:repeat(2,1fr)}
-  table{display:block;overflow-x:auto;white-space:nowrap}
-}
-</style>
+  <style>
+    :root {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #111827;
+      background: #f5f7fb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f7fb;
+    }
+
+    .wrap {
+      max-width: 1050px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #d1d5db;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    }
+
+    .searchRow {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: #111827;
+      color: white;
+    }
+
+    .secondary {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    select {
+      padding: 11px 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: white;
+      font-size: 14px;
+    }
+
+    .hint {
+      color: #6b7280;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .status {
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #f3f4f6;
+      margin-bottom: 14px;
+      color: #374151;
+    }
+
+    .error {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .catalog {
+      display: grid;
+      gap: 10px;
+    }
+
+    .catalogCard {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      text-align: left;
+      background: white;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      border-radius: 14px;
+    }
+
+    .catalogCard:hover {
+      border-color: #9ca3af;
+    }
+
+    .catalogCard img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #f3f4f6;
+    }
+
+    .catalogInfo {
+      flex: 1;
+    }
+
+    .catalogName {
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .catalogMeta {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .arrow {
+      font-size: 22px;
+      color: #6b7280;
+    }
+
+    .selected {
+      border: 2px solid #111827;
+    }
+
+    .selectedHeader {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .selectedHeader img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #f3f4f6;
+    }
+
+    .selectedTitle {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .selectedMeta {
+      color: #6b7280;
+      margin-top: 5px;
+    }
+
+    .grades {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .gradeCard {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 15px;
+      background: #fafafa;
+    }
+
+    .gradeName {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .price {
+      font-size: 24px;
+      font-weight: 900;
+      margin: 8px 0;
+    }
+
+    .details {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .empty {
+      padding: 25px;
+      text-align: center;
+      color: #6b7280;
+      background: #f9fafb;
+      border-radius: 12px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    @media (max-width: 600px) {
+      .wrap {
+        padding: 12px;
+      }
+
+      header {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .selectedHeader {
+        align-items: flex-start;
+      }
+
+      .selectedHeader img {
+        width: 85px;
+        height: 85px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<header>
   <div class="wrap">
-    <h1>CardValue</h1>
-    <div class="sub">Prix des cartes Pokémon gradées — ventes réelles</div>
-  </div>
-</header>
 
-<main class="wrap">
+    <header>
+      <h1>CardValue</h1>
+      <p>Prix des cartes Pokémon gradées — ventes réelles</p>
+    </header>
 
-<section class="panel">
+    <div class="panel">
 
-  <div class="search">
-    <input id="q" placeholder="Ex. Charizard, Pikachu, 045/150…">
-    <button id="searchBtn">Rechercher</button>
-  </div>
+      <div class="searchRow">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Rechercher une carte, ex. Charizard"
+          autocomplete="off"
+        >
 
-  <div class="filters">
-
-    <select id="market">
-      <option value="US">🇺🇸 USA / USD</option>
-      <option value="EU">🇪🇺 Europe / EUR</option>
-    </select>
-
-    <select id="grader">
-      <option value="">Toutes les gradations</option>
-      <option value="PSA">PSA</option>
-      <option value="BGS">BGS</option>
-      <option value="CGC">CGC</option>
-      <option value="SGC">SGC</option>
-      <option value="ACE">ACE</option>
-      <option value="TAG">TAG</option>
-      <option value="PCA">PCA</option>
-      <option value="SFG">SFG</option>
-      <option value="CGS">CGS</option>
-      <option value="PGS">PGS</option>
-      <option value="EGS">EGS</option>
-      <option value="AOG">AOG</option>
-      <option value="GSG">GSG</option>
-      <option value="GCG">GCG</option>
-      <option value="MTG">MTG</option>
-    </select>
-
-    <select id="grade">
-      <option value="">Tous les grades</option>
-      <option value="10">10</option>
-      <option value="9.5">9.5</option>
-      <option value="9">9</option>
-      <option value="8.5">8.5</option>
-      <option value="8">8</option>
-      <option value="7">7</option>
-      <option value="6">6</option>
-      <option value="5">5</option>
-    </select>
-
-  </div>
-
-  <div class="hint">
-    CardValue affiche uniquement les cartes ayant des ventes gradées.
-    Les cartes non gradées ne sont jamais utilisées comme prix.
-  </div>
-
-  <div id="status" class="status"></div>
-
-</section>
-
-<section id="results" class="grid"></section>
-
-<section id="detail" class="detail"></section>
-
-</main>
-
-<script>
-
-let cards = [];
-
-const $ = id => document.getElementById(id);
-
-function money(value){
-
-  if(value === null || value === undefined || isNaN(Number(value))){
-    return "—";
-  }
-
-  return "$" + Number(value).toLocaleString("en-US",{
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-  });
-}
-
-function esc(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;");
-}
-
-function getGrades(card){
-
-  const prices = card.prices?.ebay || {};
-
-  return Object.entries(prices)
-    .map(([key,value]) => {
-
-      if(!value || Number(value.saleCount || 0) <= 0){
-        return null;
-      }
-
-      const parts = key.split("_");
-
-      if(parts.length < 2){
-        return null;
-      }
-
-      const grader = parts[0].toUpperCase();
-      const grade = parts.slice(1).join(".");
-
-      return {
-        grader,
-        grade,
-        median:Number(value.median || 0),
-        avg:Number(value.avg || 0),
-        low:Number(value.low || 0),
-        high:Number(value.high || 0),
-        sales:Number(value.saleCount || 0),
-        lastSaleDate:value.lastSaleDate || null,
-        confidence:value.smartMarketPrice?.confidence || "low"
-      };
-
-    })
-    .filter(Boolean)
-    .sort((a,b) => b.median - a.median);
-}
-
-function filteredGrades(card){
-
-  let grades = getGrades(card);
-
-  const selectedGrader = $("grader").value;
-  const selectedGrade = $("grade").value;
-
-  if(selectedGrader){
-    grades = grades.filter(g => g.grader === selectedGrader);
-  }
-
-  if(selectedGrade){
-    grades = grades.filter(g => g.grade === selectedGrade);
-  }
-
-  return grades;
-}
-
-function cardHtml(card,index){
-
-  const grades = filteredGrades(card);
-
-  if(!grades.length){
-    return "";
-  }
-
-  const best = grades[0];
-
-  const chips = grades.slice(0,8).map(g => `
-    <span class="chip">
-      ${esc(g.grader)} ${esc(g.grade)}
-      · ${money(g.median)}
-      · ${g.sales} vente${g.sales > 1 ? "s" : ""}
-    </span>
-  `).join("");
-
-  return `
-    <article class="card">
-
-      <div class="cardtop">
-
-        ${
-          card.image
-          ? `<img class="thumb" src="${esc(card.image)}" alt="">`
-          : ""
-        }
-
-        <div>
-          <div class="name">${esc(card.name)}</div>
-
-          <div class="muted">
-            ${esc(card.cardNumber || "")}
-            ${card.set?.name ? " · " + esc(card.set.name) : ""}
-          </div>
-
-          ${
-            card.variant
-            ? `<div class="muted">${esc(card.variant)}</div>`
-            : ""
-          }
-
-        </div>
-
-      </div>
-
-      <div class="price">
-        ${money(best.median)}
-      </div>
-
-      <div class="muted">
-        Médiane · ${esc(best.grader)} ${esc(best.grade)}
-        · ${best.sales} vente${best.sales > 1 ? "s" : ""}
-      </div>
-
-      <div class="chips">
-        ${chips}
-      </div>
-
-      <div class="actions">
-        <button onclick="openDetail(${index})">
-          Voir les ventes
+        <button id="searchButton" class="primary">
+          Rechercher
         </button>
       </div>
 
-    </article>
-  `;
-}
+      <div class="filters">
+        <select id="marketSelect">
+          <option value="US">🇺🇸 États-Unis</option>
+          <option value="EU">🇪🇺 Europe / France</option>
+        </select>
 
-function render(){
+        <select id="graderSelect">
+          <option value="ALL">Toutes les sociétés</option>
+          <option value="PSA">PSA</option>
+          <option value="BGS">BGS</option>
+          <option value="CGC">CGC</option>
+          <option value="SGC">SGC</option>
+          <option value="ACE">ACE</option>
+          <option value="TAG">TAG</option>
+          <option value="PCA">PCA</option>
+          <option value="SFG">SFG</option>
+          <option value="CGS">CGS</option>
+          <option value="PGS">PGS</option>
+          <option value="EGS">EGS</option>
+          <option value="AOG">AOG</option>
+          <option value="GSG">GSG</option>
+          <option value="GCG">GCG</option>
+          <option value="MTG">MTG</option>
+        </select>
 
-  const results = $("results");
+        <select id="gradeSelect">
+          <option value="ALL">Tous les grades</option>
+          <option value="10">10</option>
+          <option value="9.5">9.5</option>
+          <option value="9">9</option>
+          <option value="8.5">8.5</option>
+          <option value="8">8</option>
+        </select>
+      </div>
 
-  const visible = cards.filter(card =>
-    filteredGrades(card).length > 0
-  );
+      <div class="hint">
+        Tape le nom de la carte, puis sélectionne une carte précise.
+        Les prix gradés ne sont recherchés qu'après cette sélection.
+      </div>
+    </div>
 
-  $("status").textContent =
-    `${visible.length} résultat${visible.length > 1 ? "s" : ""} trouvé${visible.length > 1 ? "s" : ""}.`;
+    <div id="status"></div>
 
-  if(!visible.length){
+    <div id="catalogPanel" class="panel" style="display:none;">
+      <h2>Choisis une carte</h2>
+      <p class="hint">
+        Plusieurs cartes peuvent correspondre à ta recherche.
+        Sélectionne exactement celle que tu veux analyser.
+      </p>
 
-    results.innerHTML = `
-      <div class="panel">
-        <strong>Aucune donnée disponible.</strong>
-        <div class="muted">
-          Aucune vente gradée ne correspond aux filtres sélectionnés.
+      <div id="catalog" class="catalog"></div>
+    </div>
+
+    <div id="selectedPanel" class="panel" style="display:none;">
+      <div class="selectedHeader">
+        <img id="selectedImage" src="" alt="Carte Pokémon">
+
+        <div>
+          <div id="selectedTitle" class="selectedTitle"></div>
+          <div id="selectedMeta" class="selectedMeta"></div>
+
+          <div style="margin-top:12px;">
+            <button id="priceButton" class="primary">
+              Voir les ventes gradées
+            </button>
+
+            <button id="changeCardButton" class="secondary">
+              Changer de carte
+            </button>
+          </div>
         </div>
       </div>
-    `;
+    </div>
 
-    return;
+    <div id="pricesPanel" class="panel" style="display:none;">
+      <h2>Ventes gradées</h2>
+
+      <div id="prices"></div>
+    </div>
+
+    <div class="panel">
+      <div class="small">
+        CardValue utilise uniquement les données de cartes gradées disponibles
+        auprès de sa source de prix. Les cartes non gradées ne sont jamais
+        utilisées comme prix de référence.
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  const searchInput = document.getElementById("searchInput");
+  const searchButton = document.getElementById("searchButton");
+  const marketSelect = document.getElementById("marketSelect");
+  const graderSelect = document.getElementById("graderSelect");
+  const gradeSelect = document.getElementById("gradeSelect");
+
+  const status = document.getElementById("status");
+  const catalogPanel = document.getElementById("catalogPanel");
+  const catalog = document.getElementById("catalog");
+
+  const selectedPanel = document.getElementById("selectedPanel");
+  const selectedImage = document.getElementById("selectedImage");
+  const selectedTitle = document.getElementById("selectedTitle");
+  const selectedMeta = document.getElementById("selectedMeta");
+
+  const priceButton = document.getElementById("priceButton");
+  const changeCardButton = document.getElementById("changeCardButton");
+
+  const pricesPanel = document.getElementById("pricesPanel");
+  const prices = document.getElementById("prices");
+
+  let selectedCard = null;
+
+  function showStatus(message, isError = false) {
+    status.innerHTML = "";
+
+    if (!message) return;
+
+    const div = document.createElement("div");
+    div.className = "status" + (isError ? " error" : "");
+    div.textContent = message;
+
+    status.appendChild(div);
   }
 
-  results.innerHTML = visible
-    .map(card => cardHtml(card,cards.indexOf(card)))
-    .join("");
-}
-
-async function search(){
-
-  const query = $("q").value.trim();
-
-  if(!query){
-    $("status").textContent =
-      "Entre le nom d'une carte ou son numéro.";
-    return;
+  function escapeHtml(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  $("status").textContent = "Recherche en cours…";
-  $("results").innerHTML = "";
+  async function searchCatalog() {
+    const query = searchInput.value.trim();
 
-  try{
-
-    const market = $("market").value;
-
-    if(market === "EU"){
-
-      $("status").textContent =
-        "Les données Europe/France seront ajoutées avec notre source européenne.";
-
+    if (!query) {
+      showStatus("Entre le nom d'une carte.", true);
       return;
     }
 
-    const response = await fetch(
-      `/api/search?q=${encodeURIComponent(query)}&market=US`
+    selectedCard = null;
+    selectedPanel.style.display = "none";
+    pricesPanel.style.display = "none";
+    catalogPanel.style.display = "none";
+    catalog.innerHTML = "";
+
+    if (marketSelect.value !== "US") {
+      showStatus(
+        "Les données Europe / France seront ajoutées avec notre source européenne."
+      );
+      return;
+    }
+
+    searchButton.disabled = true;
+    showStatus("Recherche des cartes...");
+
+    try {
+      const response = await fetch(
+        "/api/catalog?q=" + encodeURIComponent(query)
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || result.message || "Erreur lors de la recherche."
+        );
+      }
+
+      const cards = Array.isArray(result.data) ? result.data : [];
+
+      if (!cards.length) {
+        showStatus("Aucune carte trouvée.", true);
+        return;
+      }
+
+      showStatus(
+        cards.length === 1
+          ? "1 carte trouvée. Sélectionne-la pour continuer."
+          : cards.length + " cartes trouvées. Sélectionne la carte exacte."
+      );
+
+      catalogPanel.style.display = "block";
+
+      cards.forEach((card) => {
+        const button = document.createElement("button");
+        button.className = "catalogCard";
+
+        const image = card.image
+          ? `<img src="${escapeHtml(card.image)}" alt="">`
+          : `<div style="width:64px;height:64px;"></div>`;
+
+        const setName =
+          typeof card.set === "string"
+            ? card.set
+            : card.set?.name || "";
+
+        button.innerHTML = `
+          ${image}
+
+          <div class="catalogInfo">
+            <div class="catalogName">
+              ${escapeHtml(card.name)}
+            </div>
+
+            <div class="catalogMeta">
+              ${escapeHtml(setName)}
+              ${card.cardNumber ? " • " + escapeHtml(card.cardNumber) : ""}
+              ${card.variant ? " • " + escapeHtml(card.variant) : ""}
+            </div>
+          </div>
+
+          <div class="arrow">›</div>
+        `;
+
+        button.addEventListener("click", () => {
+          selectCard(card);
+        });
+
+        catalog.appendChild(button);
+      });
+
+    } catch (error) {
+      showStatus(
+        "Erreur : " + (error.message || "problème lors de la recherche."),
+        true
+      );
+    } finally {
+      searchButton.disabled = false;
+    }
+  }
+
+  function selectCard(card) {
+    selectedCard = card;
+
+    const setName =
+      typeof card.set === "string"
+        ? card.set
+        : card.set?.name || "";
+
+    selectedImage.src = card.image || "";
+    selectedTitle.textContent =
+      card.name || "Carte sélectionnée";
+
+    selectedMeta.textContent =
+      [setName, card.cardNumber, card.variant]
+        .filter(Boolean)
+        .join(" • ");
+
+    selectedPanel.style.display = "block";
+    pricesPanel.style.display = "none";
+    prices.innerHTML = "";
+
+    showStatus(
+      "Carte sélectionnée. Les prix seront recherchés uniquement pour cette carte."
     );
 
-    const json = await response.json();
+    selectedPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 
-    if(!response.ok){
-      throw new Error(json.error || "Erreur de recherche");
+  async function loadPrices() {
+    if (!selectedCard) {
+      showStatus(
+        "Tu dois d'abord sélectionner une carte précise.",
+        true
+      );
+      return;
     }
 
-    cards = Array.isArray(json.data) ? json.data : [];
+    const id = selectedCard.tcgPlayerId || selectedCard.id;
 
-    render();
+    if (!id) {
+      showStatus(
+        "Impossible d'identifier cette carte.",
+        true
+      );
+      return;
+    }
 
-  }catch(error){
+    priceButton.disabled = true;
+    pricesPanel.style.display = "block";
+    prices.innerHTML =
+      '<div class="status">Recherche des ventes gradées pour cette carte uniquement...</div>';
 
-    $("status").textContent =
-      "Erreur : " + error.message;
+    try {
+      const response = await fetch(
+        "/api/prices?id=" + encodeURIComponent(id)
+      );
 
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || result.message || "Erreur lors de la recherche des prix."
+        );
+      }
+
+      const card = result.data;
+
+      displayPrices(card);
+
+    } catch (error) {
+      prices.innerHTML = `
+        <div class="status error">
+          Erreur : ${escapeHtml(
+            error.message || "problème lors de la recherche des prix."
+          )}
+        </div>
+      `;
+    } finally {
+      priceButton.disabled = false;
+    }
   }
-}
 
-function openDetail(index){
+  function displayPrices(card) {
+    let salesByGrade = card?.ebay?.salesByGrade || {};
 
-  const card = cards[index];
+    /*
+      Certaines réponses peuvent être normalisées différemment.
+      On accepte donc également prices.ebay.
+    */
+    if (!Object.keys(salesByGrade).length && card?.prices?.ebay) {
+      salesByGrade = {};
 
-  if(!card){
-    return;
-  }
+      Object.entries(card.prices.ebay).forEach(([key, value]) => {
+        const match = key.match(/^([A-Za-z]+)_([0-9]+(?:_[0-9]+)?)$/);
 
-  const grades = filteredGrades(card);
+        if (!match) return;
 
-  if(!grades.length){
-    return;
-  }
+        const grader = match[1].toLowerCase();
+        const grade = match[2].replace("_", ".");
 
-  $("detail").classList.add("show");
+        salesByGrade[grader + grade.replace(".", "_")] = {
+          count: value.saleCount,
+          medianPrice: value.median,
+          averagePrice: value.avg,
+          minPrice: value.low,
+          maxPrice: value.high,
+          lastSaleDate: value.lastSaleDate
+        };
+      });
+    }
 
-  const totalSales = grades.reduce(
-    (total,g) => total + g.sales,0
-  );
+    const entries = Object.entries(salesByGrade)
+      .map(([key, value]) => {
+        if (!value) return null;
 
-  const latestSale = grades
-    .map(g => g.lastSaleDate)
-    .filter(Boolean)
-    .sort()
-    .reverse()[0];
+        const match = key.match(/^([A-Za-z]+)([0-9]+(?:_[0-9]+)?)$/);
 
-  $("detail").innerHTML = `
+        if (!match) return null;
 
-    <button class="close" onclick="closeDetail()">
-      ← Retour aux résultats
-    </button>
+        const grader = match[1].toUpperCase();
+        const grade = match[2].replace("_", ".");
 
-    <h2>${esc(card.name)}</h2>
+        const count = Number(
+          value.count ??
+          value.saleCount ??
+          0
+        );
 
-    <div class="muted">
-      ${esc(card.cardNumber || "")}
-      ${card.set?.name ? " · " + esc(card.set.name) : ""}
-    </div>
+        const gradeNumber = Number(grade);
 
-    <div class="metrics">
+        if (!count || gradeNumber < 8) {
+          return null;
+        }
 
-      <div class="metric">
-        Meilleure médiane
-        <b>${money(grades[0].median)}</b>
-      </div>
+        return {
+          grader,
+          grade,
+          gradeNumber,
+          count,
+          median: value.medianPrice ?? value.median,
+          average: value.averagePrice ?? value.avg,
+          min: value.minPrice ?? value.low,
+          max: value.maxPrice ?? value.high,
+          lastSaleDate: value.lastSaleDate
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => {
+        if (a.grader !== b.grader) {
+          return a.grader.localeCompare(b.grader);
+        }
 
-      <div class="metric">
-        Ventes
-        <b>${totalSales}</b>
-      </div>
+        return b.gradeNumber - a.gradeNumber;
+      });
 
-      <div class="metric">
-        Gradeur
-        <b>${esc(grades[0].grader)}</b>
-      </div>
+    if (!entries.length) {
+      prices.innerHTML = `
+        <div class="empty">
+          Aucune vente gradée avec un grade de 8 ou plus
+          n'a été trouvée pour cette carte.
+        </div>
+      `;
+      return;
+    }
 
-      <div class="metric">
-        Grade
-        <b>${esc(grades[0].grade)}</b>
-      </div>
+    const selectedGrader = graderSelect.value;
+    const selectedGrade = gradeSelect.value;
 
-    </div>
+    const filtered = entries.filter((entry) => {
+      if (
+        selectedGrader !== "ALL" &&
+        entry.grader !== selectedGrader
+      ) {
+        return false;
+      }
 
-    <h3>Prix des cartes gradées</h3>
+      if (
+        selectedGrade !== "ALL" &&
+        entry.grade !== selectedGrade
+      ) {
+        return false;
+      }
 
-    <table>
+      return true;
+    });
 
-      <thead>
-        <tr>
-          <th>Gradeur</th>
-          <th>Grade</th>
-          <th>Médiane</th>
-          <th>Moyenne</th>
-          <th>Min</th>
-          <th>Max</th>
-          <th>Ventes</th>
-          <th>Confiance</th>
-        </tr>
-      </thead>
+    if (!filtered.length) {
+      prices.innerHTML = `
+        <div class="empty">
+          Aucun résultat pour ces filtres.
+        </div>
+      `;
+      return;
+    }
 
-      <tbody>
+    prices.innerHTML = `
+      <div class="grades">
+        ${filtered.map((entry) => `
+          <div class="gradeCard">
 
-        ${grades.map(g => `
+            <div class="gradeName">
+              ${escapeHtml(entry.grader)} ${escapeHtml(entry.grade)}
+            </div>
 
-          <tr>
-            <td>
-              <span class="badge">${esc(g.grader)}</span>
-            </td>
+            <div class="price">
+              ${formatPrice(entry.median)}
+            </div>
 
-            <td>${esc(g.grade)}</td>
+            <div class="details">
+              Médiane : ${formatPrice(entry.median)}<br>
+              Moyenne : ${formatPrice(entry.average)}<br>
+              Min : ${formatPrice(entry.min)}<br>
+              Max : ${formatPrice(entry.max)}<br>
+              Ventes : ${escapeHtml(entry.count)}
+              ${entry.lastSaleDate
+                ? "<br>Dernière vente : " +
+                  escapeHtml(formatDate(entry.lastSaleDate))
+                : ""}
+            </div>
 
-            <td>${money(g.median)}</td>
-
-            <td>${money(g.avg)}</td>
-
-            <td>${money(g.low)}</td>
-
-            <td>${money(g.high)}</td>
-
-            <td>${g.sales}</td>
-
-            <td>${esc(g.confidence)}</td>
-          </tr>
-
+          </div>
         `).join("")}
+      </div>
+    `;
 
-      </tbody>
+    pricesPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 
-    </table>
+  function formatPrice(value) {
+    const number = Number(value);
 
-    ${
-      latestSale
-      ? `<p class="hint">
-          Dernière vente disponible :
-          ${new Date(latestSale).toLocaleDateString("fr-FR")}
-        </p>`
-      : ""
+    if (!Number.isFinite(number)) {
+      return "—";
     }
 
-    <p class="hint">
-      Données de ventes gradées via PokemonPriceTracker/eBay.
-      Les données non gradées ne sont pas utilisées.
-    </p>
+    return new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "USD"
+    }).format(number);
+  }
 
-  `;
+  function formatDate(value) {
+    const date = new Date(value);
 
-  $("detail").scrollIntoView({
-    behavior:"smooth"
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat("fr-FR").format(date);
+  }
+
+  searchButton.addEventListener("click", searchCatalog);
+
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      searchCatalog();
+    }
   });
-}
 
-function closeDetail(){
+  priceButton.addEventListener("click", loadPrices);
 
-  $("detail").classList.remove("show");
-  $("detail").innerHTML = "";
+  changeCardButton.addEventListener("click", () => {
+    selectedCard = null;
+    selectedPanel.style.display = "none";
+    pricesPanel.style.display = "none";
+    prices.innerHTML = "";
 
-}
+    showStatus(
+      "Choisis une carte dans la liste avant de consulter les prix."
+    );
 
-$("searchBtn").addEventListener("click",search);
+    catalogPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
 
-$("q").addEventListener("keydown",event => {
+  graderSelect.addEventListener("change", () => {
+    if (selectedCard && pricesPanel.style.display !== "none") {
+      const cardData = window.lastPriceCard;
 
-  if(event.key === "Enter"){
-    search();
-  }
+      if (cardData) {
+        displayPrices(cardData);
+      }
+    }
+  });
 
-});
+  gradeSelect.addEventListener("change", () => {
+    if (selectedCard && pricesPanel.style.display !== "none") {
+      const cardData = window.lastPriceCard;
 
-$("grader").addEventListener("change",render);
-$("grade").addEventListener("change",render);
+      if (cardData) {
+        displayPrices(cardData);
+      }
+    }
+  });
 
-$("market").addEventListener("change",() => {
+  /*
+    On mémorise la dernière réponse de prix pour pouvoir
+    changer les filtres sans refaire une requête API.
+  */
+  const originalDisplayPrices = displayPrices;
 
-  if($("market").value === "EU"){
-
-    cards = [];
-
-    $("results").innerHTML = "";
-
-    $("status").textContent =
-      "Les données Europe/France seront ajoutées avec notre source européenne.";
-
-    return;
-  }
-
-  if(cards.length){
-    render();
-  }
-
-});
-
+  displayPrices = function(card) {
+    window.lastPriceCard = card;
+    originalDisplayPrices(card);
+  };
 </script>
 
 </body>
