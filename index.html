@@ -1,136 +1,568 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>CardValue v2 — Prix Pokémon</title>
-  <style>
-    :root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111827;background:#f5f7fb}
-    *{box-sizing:border-box} body{margin:0}.wrap{max-width:1050px;margin:auto;padding:18px}
-    header{background:#111827;color:white;padding:22px 18px;border-radius:0 0 22px 22px}
-    h1{margin:0 0 5px;font-size:27px}.sub{opacity:.78;font-size:14px}
-    .panel{background:white;border-radius:18px;padding:16px;margin-top:16px;box-shadow:0 5px 22px #0000000b}
-    .search{display:grid;grid-template-columns:1fr auto;gap:10px}.search input{min-width:0}
-    input,select,button{font:inherit;border:1px solid #d8dee9;border-radius:12px;padding:12px;background:white}
-    button{background:#111827;color:white;border:0;font-weight:700;cursor:pointer}.secondary{background:#eef2f7;color:#111827}
-    .filters{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-    .hint{font-size:12px;color:#667085;margin-top:8px}.status{margin-top:10px;font-size:13px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px}
-    .card{border:1px solid #e6eaf0;border-radius:16px;padding:14px;background:#fff}
-    .cardtop{display:flex;gap:12px}.thumb{width:74px;height:104px;object-fit:cover;border-radius:8px;background:#eef2f7}
-    .name{font-weight:800}.muted{color:#667085;font-size:13px}.price{font-size:25px;font-weight:900;margin-top:8px}
-    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{background:#f0f3f8;border-radius:999px;padding:5px 8px;font-size:11px}
-    .resultActions{margin-top:10px;display:flex;gap:8px}.resultActions button{padding:9px 11px;font-size:13px}
-    .detail{display:none}.detail.show{display:block}.back{margin-bottom:10px}
-    .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
-    .metric{background:#f7f8fb;border-radius:12px;padding:11px}.metric b{display:block;font-size:19px}
-    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}th,td{padding:9px 5px;border-bottom:1px solid #edf0f4;text-align:left}
-    .note{font-size:12px;color:#667085;line-height:1.5}.ok{color:#067647}.warn{color:#b54708}
-    @media(max-width:650px){.filters{grid-template-columns:1fr}.search{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CardValue — Pokémon gradés</title>
+
+<style>
+:root{
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#111827;background:#f5f7fb
+}
+*{box-sizing:border-box}
+body{margin:0}
+.wrap{max-width:1050px;margin:auto;padding:20px}
+header{
+  background:#111827;color:white;padding:22px 0;margin-bottom:20px
+}
+h1{margin:0;font-size:28px}
+.sub{opacity:.75;margin-top:5px}
+.panel,.card,.detail{
+  background:white;border:1px solid #e3e8f0;
+  border-radius:18px;padding:18px;margin-bottom:16px
+}
+.search{
+  display:grid;grid-template-columns:1fr auto;gap:10px
+}
+input,select,button{
+  font:inherit;border:1px solid #d8dee8;border-radius:12px;
+  padding:13px;background:white
+}
+button{
+  background:#111827;color:white;border:0;font-weight:700
+}
+.filters{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-top:12px
+}
+.hint,.muted{color:#667085;font-size:13px}
+.status{margin-top:12px;font-weight:600}
+.grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px
+}
+.cardtop{display:flex;gap:14px}
+.thumb{
+  width:90px;height:125px;object-fit:contain;
+  border-radius:10px;background:#f3f4f6
+}
+.name{font-weight:800;font-size:18px}
+.price{font-size:25px;font-weight:900;margin-top:12px}
+.chips{
+  display:flex;flex-wrap:wrap;gap:7px;margin-top:12px
+}
+.chip{
+  background:#f2f4f7;border-radius:999px;
+  padding:7px 10px;font-size:12px
+}
+.actions{margin-top:14px}
+.metrics{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;margin:14px 0
+}
+.metric{
+  background:#f7f8fa;border-radius:12px;padding:12px
+}
+.metric b{display:block;font-size:17px;margin-top:4px}
+table{width:100%;border-collapse:collapse}
+th,td{
+  text-align:left;padding:10px;border-bottom:1px solid #e5e7eb;
+  font-size:13px
+}
+.badge{
+  display:inline-block;padding:5px 8px;border-radius:999px;
+  background:#eef2ff;font-weight:700
+}
+.detail{display:none}
+.detail.show{display:block}
+.close{
+  background:#eef0f3;color:#111827;margin-bottom:12px
+}
+@media(max-width:700px){
+  .wrap{padding:12px}
+  .grid{grid-template-columns:1fr}
+  .filters{grid-template-columns:1fr}
+  .search{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  table{display:block;overflow-x:auto;white-space:nowrap}
+}
+</style>
 </head>
+
 <body>
-<header><div class="wrap"><h1>CardValue v2</h1><div class="sub">Recherche de cartes Pokémon + prix réels via PokeTrace</div></div></header>
+
+<header>
+  <div class="wrap">
+    <h1>CardValue</h1>
+    <div class="sub">Prix des cartes Pokémon gradées — ventes réelles</div>
+  </div>
+</header>
+
 <main class="wrap">
-  <section class="panel">
-    <div class="search">
-      <input id="q" placeholder="Ex. Charizard, Pikachu, 045/150…" autocomplete="off">
-      <button onclick="searchCards()">Rechercher</button>
-    </div>
-    <div class="filters">
-      <select id="market"><option value="EU">🇪🇺 Europe / EUR</option><option value="US">🇺🇸 USA / USD</option></select>
-      <select id="grader"><option value="">Toutes les gradations</option><option>PSA</option><option>BGS</option><option>CGC</option><option>SGC</option><option>ACE</option><option>TAG</option><option>PCA</option><option>SFG</option><option>CGS</option><option>PGS</option><option>EGS</option><option>AOG</option><option>GSG</option><option>GCG</option><option>MTG</option></select>
-      <select id="grade"><option value="">Tous les grades</option><option>10</option><option>9.5</option><option>9</option><option>8.5</option><option>8</option></select>
-    </div>
-    <div class="hint">La recherche utilise le marché choisi. Les prix gradés nécessitent un accès PokeTrace Pro ou supérieur.</div>
-    <div id="status" class="status"></div>
-  </section>
 
-  <section id="results" class="grid"></section>
+<section class="panel">
 
-  <section id="detail" class="panel detail">
-    <button class="secondary back" onclick="closeDetail()">← Retour</button>
-    <div id="detailBody"></div>
-  </section>
+  <div class="search">
+    <input id="q" placeholder="Ex. Charizard, Pikachu, 045/150…">
+    <button id="searchBtn">Rechercher</button>
+  </div>
 
-  <section class="panel note">
-    <b>Important :</b> cette V2 ne fabrique pas de prix. Elle affiche les données retournées par PokeTrace.
-    Les données EU viennent notamment de CardMarket et les données US de TCGPlayer/eBay selon le marché et le plan.
-    Les ventes eBay individuelles sont disponibles via l'endpoint « listings » du plan Scale.
-  </section>
+  <div class="filters">
+
+    <select id="market">
+      <option value="US">🇺🇸 USA / USD</option>
+      <option value="EU">🇪🇺 Europe / EUR</option>
+    </select>
+
+    <select id="grader">
+      <option value="">Toutes les gradations</option>
+      <option value="PSA">PSA</option>
+      <option value="BGS">BGS</option>
+      <option value="CGC">CGC</option>
+      <option value="SGC">SGC</option>
+      <option value="ACE">ACE</option>
+      <option value="TAG">TAG</option>
+      <option value="PCA">PCA</option>
+      <option value="SFG">SFG</option>
+      <option value="CGS">CGS</option>
+      <option value="PGS">PGS</option>
+      <option value="EGS">EGS</option>
+      <option value="AOG">AOG</option>
+      <option value="GSG">GSG</option>
+      <option value="GCG">GCG</option>
+      <option value="MTG">MTG</option>
+    </select>
+
+    <select id="grade">
+      <option value="">Tous les grades</option>
+      <option value="10">10</option>
+      <option value="9.5">9.5</option>
+      <option value="9">9</option>
+      <option value="8.5">8.5</option>
+      <option value="8">8</option>
+      <option value="7">7</option>
+      <option value="6">6</option>
+      <option value="5">5</option>
+    </select>
+
+  </div>
+
+  <div class="hint">
+    CardValue affiche uniquement les cartes ayant des ventes gradées.
+    Les cartes non gradées ne sont jamais utilisées comme prix.
+  </div>
+
+  <div id="status" class="status"></div>
+
+</section>
+
+<section id="results" class="grid"></section>
+
+<section id="detail" class="detail"></section>
+
 </main>
+
 <script>
-const euro = new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
-const usd = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
-let currentMarket='EU';
 
-function money(v,currency){if(v==null)return '—'; return (currency==='EUR'?euro:usd).format(v/100);}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+let cards = [];
 
-async function searchCards(){
-  const q=document.getElementById('q').value.trim();
-  if(!q){document.getElementById('status').textContent='Entre un nom de carte ou un numéro.';return}
-  currentMarket=document.getElementById('market').value;
-  const status=document.getElementById('status');
-  status.textContent='Recherche en cours…';
-  document.getElementById('results').innerHTML='';
-  document.getElementById('detail').classList.remove('show');
-  try{
-    const r=await fetch('/api/search?q='+encodeURIComponent(q)+'&market='+currentMarket);
-    const j=await r.json();
-    if(!r.ok) throw new Error(j.error||'Erreur API');
-    const data=j.data||[];
-    status.textContent=data.length?`${data.length} résultat(s) trouvé(s).`:'Aucun résultat.';
-    document.getElementById('results').innerHTML=data.map(cardHtml).join('');
-  }catch(e){status.innerHTML='<span class="warn">'+esc(e.message)+'</span>';}
+const $ = id => document.getElementById(id);
+
+function money(value){
+
+  if(value === null || value === undefined || isNaN(Number(value))){
+    return "—";
+  }
+
+  return "$" + Number(value).toLocaleString("en-US",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
 }
 
-function cardHtml(c){
-  const p=c.prices||{};
-  const source = currentMarket==='EU' ? (p.cardmarket||{}) : (p.ebay||p.tcgplayer||{});
-  const grades=Object.entries(source).filter(([k])=>/^(PSA|BGS|CGC|SGC|ACE|TAG|PCA|SFG|CGS|PGS|EGS|AOG|GSG|GCG|MTG)_/.test(k));
-  const raw=source.NEAR_MINT;
-  return `<article class="card">
-    <div class="cardtop">
-      ${c.image?`<img class="thumb" src="${esc(c.image)}" alt="">`: '<div class="thumb"></div>'}
-      <div><div class="name">${esc(c.name)}</div>
-      <div class="muted">${esc(c.cardNumber||'')} · ${esc(c.set?.name||'')}</div>
-      <div class="muted">${esc(c.variant||'')} · ${esc(c.game||'')}</div></div>
-    </div>
-    <div class="price">${raw?money(raw.avg,c.currency):'Prix brut —'}</div>
-    <div class="muted">${raw?'Référence brute / Near Mint':'Aucune donnée brute affichée'}</div>
-    <div class="chips">${grades.slice(0,6).map(([k,v])=>`<span class="chip">${esc(k.replaceAll('_',' '))}: ${money(v.avg,c.currency)}</span>`).join('')}</div>
-    <div class="resultActions"><button onclick="openDetail('${esc(c.id)}')">Voir les prix</button></div>
-  </article>`;
+function esc(value){
+
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;");
 }
 
-async function openDetail(id){
-  const detail=document.getElementById('detail');
-  const body=document.getElementById('detailBody');
-  detail.classList.add('show'); body.innerHTML='Chargement…'; window.scrollTo({top:0,behavior:'smooth'});
-  try{
-    const r=await fetch('/api/card?id='+encodeURIComponent(id)+'&market='+currentMarket);
-    const j=await r.json(); if(!r.ok) throw new Error(j.error||'Erreur');
-    const c=j.data; const prices=c.prices||{};
-    const source=currentMarket==='EU'?(prices.cardmarket_unsold||prices.cardmarket||{}):(prices.ebay||{});
-    const selectedGrader=document.getElementById('grader').value;
-    const selectedGrade=document.getElementById('grade').value;
-    let rows=Object.entries(source).filter(([k])=>/^(PSA|BGS|CGC|SGC|ACE|TAG|PCA|SFG|CGS|PGS|EGS|AOG|GSG|GCG|MTG)_/.test(k));
-    if(selectedGrader) rows=rows.filter(([k])=>k.startsWith(selectedGrader+'_'));
-    if(selectedGrade) rows=rows.filter(([k])=>k.endsWith('_'+selectedGrade.replace('.','_')));
-    rows.sort((a,b)=>(b[1]?.avg||0)-(a[1]?.avg||0));
-    body.innerHTML=`
-      <h2>${esc(c.name)}</h2>
-      <div class="muted">${esc(c.cardNumber||'')} · ${esc(c.set?.name||'')} · ${esc(c.variant||'')}</div>
-      <div class="metrics">
-        <div class="metric"><span>Top prix affiché</span><b>${money(c.topPrice,c.currency)}</b></div>
-        <div class="metric"><span>Ventes comptées</span><b>${esc(c.totalSaleCount??'—')}</b></div>
+function getGrades(card){
+
+  const prices = card.prices?.ebay || {};
+
+  return Object.entries(prices)
+    .map(([key,value]) => {
+
+      if(!value || Number(value.saleCount || 0) <= 0){
+        return null;
+      }
+
+      const parts = key.split("_");
+
+      if(parts.length < 2){
+        return null;
+      }
+
+      const grader = parts[0].toUpperCase();
+      const grade = parts.slice(1).join(".");
+
+      return {
+        grader,
+        grade,
+        median:Number(value.median || 0),
+        avg:Number(value.avg || 0),
+        low:Number(value.low || 0),
+        high:Number(value.high || 0),
+        sales:Number(value.saleCount || 0),
+        lastSaleDate:value.lastSaleDate || null,
+        confidence:value.smartMarketPrice?.confidence || "low"
+      };
+
+    })
+    .filter(Boolean)
+    .sort((a,b) => b.median - a.median);
+}
+
+function filteredGrades(card){
+
+  let grades = getGrades(card);
+
+  const selectedGrader = $("grader").value;
+  const selectedGrade = $("grade").value;
+
+  if(selectedGrader){
+    grades = grades.filter(g => g.grader === selectedGrader);
+  }
+
+  if(selectedGrade){
+    grades = grades.filter(g => g.grade === selectedGrade);
+  }
+
+  return grades;
+}
+
+function cardHtml(card,index){
+
+  const grades = filteredGrades(card);
+
+  if(!grades.length){
+    return "";
+  }
+
+  const best = grades[0];
+
+  const chips = grades.slice(0,8).map(g => `
+    <span class="chip">
+      ${esc(g.grader)} ${esc(g.grade)}
+      · ${money(g.median)}
+      · ${g.sales} vente${g.sales > 1 ? "s" : ""}
+    </span>
+  `).join("");
+
+  return `
+    <article class="card">
+
+      <div class="cardtop">
+
+        ${
+          card.image
+          ? `<img class="thumb" src="${esc(card.image)}" alt="">`
+          : ""
+        }
+
+        <div>
+          <div class="name">${esc(card.name)}</div>
+
+          <div class="muted">
+            ${esc(card.cardNumber || "")}
+            ${card.set?.name ? " · " + esc(card.set.name) : ""}
+          </div>
+
+          ${
+            card.variant
+            ? `<div class="muted">${esc(card.variant)}</div>`
+            : ""
+          }
+
+        </div>
+
       </div>
-      <h3>Prix gradés</h3>
-      ${rows.length?`<table><thead><tr><th>Gradeur / grade</th><th>Moyenne</th><th>Bas</th><th>Haut</th><th>Ventes</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${esc(k.replaceAll('_',' '))}</td><td>${money(v.avg,c.currency)}</td><td>${money(v.low,c.currency)}</td><td>${money(v.high,c.currency)}</td><td>${esc(v.saleCount??'—')}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Aucun prix gradé correspondant au filtre. Avec le plan gratuit PokeTrace, les données gradées ne sont pas accessibles.</p>'}
-      <p class="note">Dernière mise à jour : ${esc(c.lastUpdated||'—')}. Pour l'historique d'un grade précis, la V2 peut interroger l'endpoint d'historique PokeTrace.</p>`;
-  }catch(e){body.innerHTML='<span class="warn">'+esc(e.message)+'</span>';}
+
+      <div class="price">
+        ${money(best.median)}
+      </div>
+
+      <div class="muted">
+        Médiane · ${esc(best.grader)} ${esc(best.grade)}
+        · ${best.sales} vente${best.sales > 1 ? "s" : ""}
+      </div>
+
+      <div class="chips">
+        ${chips}
+      </div>
+
+      <div class="actions">
+        <button onclick="openDetail(${index})">
+          Voir les ventes
+        </button>
+      </div>
+
+    </article>
+  `;
 }
-function closeDetail(){document.getElementById('detail').classList.remove('show');}
+
+function render(){
+
+  const results = $("results");
+
+  const visible = cards.filter(card =>
+    filteredGrades(card).length > 0
+  );
+
+  $("status").textContent =
+    `${visible.length} résultat${visible.length > 1 ? "s" : ""} trouvé${visible.length > 1 ? "s" : ""}.`;
+
+  if(!visible.length){
+
+    results.innerHTML = `
+      <div class="panel">
+        <strong>Aucune donnée disponible.</strong>
+        <div class="muted">
+          Aucune vente gradée ne correspond aux filtres sélectionnés.
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  results.innerHTML = visible
+    .map(card => cardHtml(card,cards.indexOf(card)))
+    .join("");
+}
+
+async function search(){
+
+  const query = $("q").value.trim();
+
+  if(!query){
+    $("status").textContent =
+      "Entre le nom d'une carte ou son numéro.";
+    return;
+  }
+
+  $("status").textContent = "Recherche en cours…";
+  $("results").innerHTML = "";
+
+  try{
+
+    const market = $("market").value;
+
+    if(market === "EU"){
+
+      $("status").textContent =
+        "Les données Europe/France seront ajoutées avec notre source européenne.";
+
+      return;
+    }
+
+    const response = await fetch(
+      `/api/search?q=${encodeURIComponent(query)}&market=US`
+    );
+
+    const json = await response.json();
+
+    if(!response.ok){
+      throw new Error(json.error || "Erreur de recherche");
+    }
+
+    cards = Array.isArray(json.data) ? json.data : [];
+
+    render();
+
+  }catch(error){
+
+    $("status").textContent =
+      "Erreur : " + error.message;
+
+  }
+}
+
+function openDetail(index){
+
+  const card = cards[index];
+
+  if(!card){
+    return;
+  }
+
+  const grades = filteredGrades(card);
+
+  if(!grades.length){
+    return;
+  }
+
+  $("detail").classList.add("show");
+
+  const totalSales = grades.reduce(
+    (total,g) => total + g.sales,0
+  );
+
+  const latestSale = grades
+    .map(g => g.lastSaleDate)
+    .filter(Boolean)
+    .sort()
+    .reverse()[0];
+
+  $("detail").innerHTML = `
+
+    <button class="close" onclick="closeDetail()">
+      ← Retour aux résultats
+    </button>
+
+    <h2>${esc(card.name)}</h2>
+
+    <div class="muted">
+      ${esc(card.cardNumber || "")}
+      ${card.set?.name ? " · " + esc(card.set.name) : ""}
+    </div>
+
+    <div class="metrics">
+
+      <div class="metric">
+        Meilleure médiane
+        <b>${money(grades[0].median)}</b>
+      </div>
+
+      <div class="metric">
+        Ventes
+        <b>${totalSales}</b>
+      </div>
+
+      <div class="metric">
+        Gradeur
+        <b>${esc(grades[0].grader)}</b>
+      </div>
+
+      <div class="metric">
+        Grade
+        <b>${esc(grades[0].grade)}</b>
+      </div>
+
+    </div>
+
+    <h3>Prix des cartes gradées</h3>
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Gradeur</th>
+          <th>Grade</th>
+          <th>Médiane</th>
+          <th>Moyenne</th>
+          <th>Min</th>
+          <th>Max</th>
+          <th>Ventes</th>
+          <th>Confiance</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        ${grades.map(g => `
+
+          <tr>
+            <td>
+              <span class="badge">${esc(g.grader)}</span>
+            </td>
+
+            <td>${esc(g.grade)}</td>
+
+            <td>${money(g.median)}</td>
+
+            <td>${money(g.avg)}</td>
+
+            <td>${money(g.low)}</td>
+
+            <td>${money(g.high)}</td>
+
+            <td>${g.sales}</td>
+
+            <td>${esc(g.confidence)}</td>
+          </tr>
+
+        `).join("")}
+
+      </tbody>
+
+    </table>
+
+    ${
+      latestSale
+      ? `<p class="hint">
+          Dernière vente disponible :
+          ${new Date(latestSale).toLocaleDateString("fr-FR")}
+        </p>`
+      : ""
+    }
+
+    <p class="hint">
+      Données de ventes gradées via PokemonPriceTracker/eBay.
+      Les données non gradées ne sont pas utilisées.
+    </p>
+
+  `;
+
+  $("detail").scrollIntoView({
+    behavior:"smooth"
+  });
+}
+
+function closeDetail(){
+
+  $("detail").classList.remove("show");
+  $("detail").innerHTML = "";
+
+}
+
+$("searchBtn").addEventListener("click",search);
+
+$("q").addEventListener("keydown",event => {
+
+  if(event.key === "Enter"){
+    search();
+  }
+
+});
+
+$("grader").addEventListener("change",render);
+$("grade").addEventListener("change",render);
+
+$("market").addEventListener("change",() => {
+
+  if($("market").value === "EU"){
+
+    cards = [];
+
+    $("results").innerHTML = "";
+
+    $("status").textContent =
+      "Les données Europe/France seront ajoutées avec notre source européenne.";
+
+    return;
+  }
+
+  if(cards.length){
+    render();
+  }
+
+});
+
 </script>
-</body></html>
+
+</body>
+</html>
